@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 #import <Photos/Photos.h>
-#import "QBAssetCell.h"
 
 //! Project version number for QBAssetsViewController.
 FOUNDATION_EXPORT double QBAssetsViewControllerVersionNumber;
