@@ -42,7 +42,9 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
 
 @end
 
-@interface QBAssetsViewController () <PHPhotoLibraryChangeObserver, UICollectionViewDelegateFlowLayout>
+@interface QBAssetsViewController () <PHPhotoLibraryChangeObserver, UICollectionViewDelegateFlowLayout> {
+	BOOL viewDidAppear;
+}
 
 @property (nonatomic) PHCachingImageManager *imageManager;
 @property (nonatomic) PHAssetCollection *assetCollection;
@@ -92,8 +94,8 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	
-	static dispatch_once_t once;
-	dispatch_once(&once, ^{
+	if (!viewDidAppear) {
+		viewDidAppear = YES;
 		[PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
 			if (status == PHAuthorizationStatusAuthorized) {
 				self.imageManager = [PHCachingImageManager new];
@@ -130,7 +132,7 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
 				});
 			}
 		}];
-	});
+	}
 }
 
 - (void)scrollToBottom {
