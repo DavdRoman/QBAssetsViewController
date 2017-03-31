@@ -99,7 +99,11 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
 	NSMutableArray *assets = [NSMutableArray new];
 
 	for (PHAsset *asset in self.fetchResult) {
-		if (self.assetFilterBlock && self.assetFilterBlock(asset)) {
+		if (self.assetFilterBlock) {
+			if (self.assetFilterBlock(asset)) {
+				[assets addObject:asset];
+			}
+		} else {
 			[assets addObject:asset];
 		}
 	}
