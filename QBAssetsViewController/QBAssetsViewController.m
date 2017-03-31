@@ -10,6 +10,8 @@
 #import "QBAssetCell.h"
 #import "QBVideoIndicatorView.h"
 
+typedef BOOL (^AssetFilterBlock)(PHAsset *);
+
 static CGSize CGSizeScale(CGSize size, CGFloat scale) {
 	return CGSizeMake(size.width * scale, size.height * scale);
 }
@@ -49,6 +51,8 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
 @property (nonatomic) PHCachingImageManager *imageManager;
 @property (nonatomic) PHAssetCollection *assetCollection;
 @property (nonatomic) PHFetchResult *fetchResult;
+@property (nonatomic, copy) AssetFilterBlock assetFilterBlock;
+@property (nonatomic, readonly) NSArray *assets;
 @property (nonatomic, assign) CGRect previousPreheatRect;
 
 @end
@@ -89,6 +93,18 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
 
 	self.view.backgroundColor = [UIColor whiteColor];
 	self.collectionView.backgroundColor = [UIColor clearColor];
+}
+
+- (NSArray *)assets {
+	NSMutableArray *assets = [NSMutableArray new];
+
+	for (PHAsset *asset in self.fetchResult) {
+		if (self.assetFilterBlock && self.assetFilterBlock(asset)) {
+			[assets addObject:asset];
+		}
+	}
+
+	return assets;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -136,8 +152,8 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
 }
 
 - (void)scrollToBottom {
-	if (self.fetchResult.count > 0) {
-		NSIndexPath *indexPath = [NSIndexPath indexPathForItem:(self.fetchResult.count - 1) inSection:0];
+	if (self.assets.count > 0) {
+		NSIndexPath *indexPath = [NSIndexPath indexPathForItem:(self.assets.count - 1) inSection:0];
 		[self.collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionTop animated:NO];
 	}
 }
@@ -235,8 +251,8 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
     
     NSMutableArray *assets = [NSMutableArray arrayWithCapacity:indexPaths.count];
     for (NSIndexPath *indexPath in indexPaths) {
-        if (indexPath.item < self.fetchResult.count) {
-            PHAsset *asset = self.fetchResult[indexPath.item];
+        if (indexPath.item < self.assets.count) {
+            PHAsset *asset = self.assets[indexPath.item];
             [assets addObject:asset];
         }
     }
@@ -244,10 +260,10 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
 }
 
 - (NSIndexPath *)indexPathForAsset:(PHAsset *)asset {
-    if (self.fetchResult.count == 0) { return nil; }
+    if (self.assets.count == 0) { return nil; }
 
-	for (NSInteger i = 0; i < self.fetchResult.count; i++) {
-		PHAsset *a = self.fetchResult[i];
+	for (NSInteger i = 0; i < self.assets.count; i++) {
+		PHAsset *a = self.assets[i];
 		if (a == asset) {
 			return [NSIndexPath indexPathForItem:i inSection:0];
 		}
@@ -298,7 +314,7 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
 #pragma mark - UICollectionViewDataSource
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return self.fetchResult.count;
+    return self.assets.count;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -308,7 +324,7 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
     cell.showsOverlayViewWhenSelected = self.collectionView.allowsMultipleSelection;
 	
     // Image
-    PHAsset *asset = self.fetchResult[indexPath.item];
+    PHAsset *asset = self.assets[indexPath.item];
     CGSize itemSize = [(UICollectionViewFlowLayout *)collectionView.collectionViewLayout itemSize];
     CGSize targetSize = CGSizeScale(itemSize, self.traitCollection.displayScale);
     
@@ -402,7 +418,7 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    PHAsset *asset = self.fetchResult[indexPath.item];
+    PHAsset *asset = self.assets[indexPath.item];
     
     if (self.collectionView.allowsMultipleSelection) {
 		[self willChangeValueForKey:@"selectedAssets"];
@@ -412,7 +428,7 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath {
-    PHAsset *asset = self.fetchResult[indexPath.item];
+    PHAsset *asset = self.assets[indexPath.item];
 	
 	[self willChangeValueForKey:@"selectedAssets"];
     [self.selectedAssets removeObject:asset];
