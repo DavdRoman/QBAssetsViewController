@@ -10,8 +10,6 @@
 #import "QBAssetCell.h"
 #import "QBVideoIndicatorView.h"
 
-typedef BOOL (^AssetFilterBlock)(PHAsset *);
-
 static CGSize CGSizeScale(CGSize size, CGFloat scale) {
 	return CGSizeMake(size.width * scale, size.height * scale);
 }
@@ -51,7 +49,6 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
 @property (nonatomic) PHCachingImageManager *imageManager;
 @property (nonatomic) PHAssetCollection *assetCollection;
 @property (nonatomic) PHFetchResult *fetchResult;
-@property (nonatomic, copy) AssetFilterBlock assetFilterBlock;
 @property (nonatomic, readonly) NSArray *assets;
 @property (nonatomic, assign) CGRect previousPreheatRect;
 

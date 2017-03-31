@@ -15,11 +15,14 @@ FOUNDATION_EXPORT double QBAssetsViewControllerVersionNumber;
 //! Project version string for QBAssetsViewController.
 FOUNDATION_EXPORT const unsigned char QBAssetsViewControllerVersionString[];
 
+typedef BOOL (^AssetFilterBlock)(PHAsset *_Nonnull);
+
 @interface QBAssetsViewController : UICollectionViewController
 
 @property (nonatomic) BOOL shouldForceSelection;
 @property (nonatomic) PHAssetMediaType mediaType;
 @property (nonatomic) NSInteger maximumNumberOfAssets;
+@property (nonatomic, copy) AssetFilterBlock _Nullable assetFilterBlock;
 @property (nonatomic, nonnull) NSMutableOrderedSet * selectedAssets;
 
 - (instancetype _Nonnull)init NS_DESIGNATED_INITIALIZER;
