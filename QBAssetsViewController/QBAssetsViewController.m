@@ -105,7 +105,7 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
 		}
 	}
 
-	self.assets = assets
+	self.assets = assets;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
