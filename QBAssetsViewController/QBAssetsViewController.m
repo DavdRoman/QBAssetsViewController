@@ -49,7 +49,7 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
 @property (nonatomic) PHCachingImageManager *imageManager;
 @property (nonatomic) PHAssetCollection *assetCollection;
 @property (nonatomic) PHFetchResult *fetchResult;
-@property (nonatomic, readonly) NSArray *assets;
+@property (nonatomic) NSArray *assets;
 @property (nonatomic, assign) CGRect previousPreheatRect;
 
 @end
@@ -92,7 +92,7 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
 	self.collectionView.backgroundColor = [UIColor clearColor];
 }
 
-- (NSArray *)assets {
+- (void)reloadAssets {
 	NSMutableArray *assets = [NSMutableArray new];
 
 	for (PHAsset *asset in self.fetchResult) {
@@ -105,7 +105,7 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
 		}
 	}
 
-	return assets;
+	self.assets = assets
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -282,6 +282,7 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
         if (collectionChanges) {
             // Get the new fetch result
             self.fetchResult = [collectionChanges fetchResultAfterChanges];
+			[self reloadAssets];
             
             if (![collectionChanges hasIncrementalChanges] || [collectionChanges hasMoves]) {
                 // We need to reload all if the incremental diffs are not available
