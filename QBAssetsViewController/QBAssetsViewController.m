@@ -153,6 +153,11 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
 	}
 }
 
+- (void)setAssetFilterBlock:(AssetFilterBlock)assetFilterBlock {
+	_assetFilterBlock = assetFilterBlock;
+	[self reloadAssets];
+}
+
 - (void)scrollToBottom {
 	if (self.assets.count > 0) {
 		NSIndexPath *indexPath = [NSIndexPath indexPathForItem:(self.assets.count - 1) inSection:0];
