@@ -138,6 +138,7 @@ static CGSize CGSizeScale(CGSize size, CGFloat scale) {
 				}
 				
 				self.fetchResult = [PHAsset fetchAssetsInAssetCollection:self.assetCollection options:options];
+				[self reloadAssets];
 				[[PHPhotoLibrary sharedPhotoLibrary] registerChangeObserver:self];
 				
 				dispatch_sync(dispatch_get_main_queue(), ^{
